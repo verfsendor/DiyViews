@@ -10,7 +10,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import com.diy.views.diyviews.R;
 import java.util.Calendar;
@@ -32,7 +31,7 @@ public class ClockView extends View {
     private Context mContext;
     private int mClockColor = Color.WHITE;//默认表盘颜色
     private int mHourColor = Color.GRAY;//默认时针颜色
-    private int mMinuteColor = Color.YELLOW;//默认分针颜色
+    private int mMinuteColor = Color.WHITE;//默认分针颜色
     private int mSencondColor = Color.RED;//默认秒针颜色
     private int mbgColor = Color.BLACK;//默认秒针颜色
     private int mBgColor2 = Color.parseColor("#000000");//默认秒针颜色
@@ -102,20 +101,20 @@ public class ClockView extends View {
         mHourPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mHourPaint.setColor(mHourColor);
         mHourPaint.setAntiAlias(true);
-        mHourPaint.setStrokeWidth(8);
-        mHourPaint.setStyle(Paint.Style.STROKE);
+        mHourPaint.setStrokeWidth(10);
+        mHourPaint.setStyle(Paint.Style.FILL);
 
         mMinutePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mMinutePaint.setColor(mMinuteColor);
         mMinutePaint.setAntiAlias(true);
-        mMinutePaint.setStrokeWidth(6);
-        mMinutePaint.setStyle(Paint.Style.STROKE);
+        mMinutePaint.setStrokeWidth(7);
+        mMinutePaint.setStyle(Paint.Style.FILL);
 
         mSecondPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mSecondPaint.setColor(mSencondColor);
         mSecondPaint.setAntiAlias(true);
         mSecondPaint.setStrokeWidth(4);
-        mSecondPaint.setStyle(Paint.Style.STROKE);
+        mSecondPaint.setStyle(Paint.Style.FILL);
 
         mbgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mbgPaint.setColor(mbgColor);
@@ -169,7 +168,6 @@ public class ClockView extends View {
                 if("0".equals(x)){
                     x = "12";
                 }
-                Log.v("verf","i = " + i + " " + x);
                 mClockPaint.setStrokeWidth(1f);
                 canvas.drawTextOnPath(x,path,0,60,mClockPaint);
                 mClockPaint.setStrokeWidth(5f);
@@ -182,14 +180,17 @@ public class ClockView extends View {
         //画表针
         canvas.rotate((hour + 3) * 30,getMeasuredWidth()/2, getMeasuredHeight()/2);
         canvas.drawLine(getMeasuredWidth()/2, getMeasuredHeight()/2,getMeasuredWidth()/2 - 150, getMeasuredHeight()/2,mHourPaint);
+        canvas.drawCircle(getMeasuredWidth()/2 - 150, getMeasuredHeight()/2,4,mHourPaint);
         canvas.rotate(-(hour + 3) * 30,getMeasuredWidth()/2, getMeasuredHeight()/2);
 
         canvas.rotate((minute + 15) * 6,getMeasuredWidth()/2, getMeasuredHeight()/2);
         canvas.drawLine(getMeasuredWidth()/2, getMeasuredHeight()/2,getMeasuredWidth()/2 - 200, getMeasuredHeight()/2,mMinutePaint);
+        canvas.drawCircle(getMeasuredWidth()/2 - 200, getMeasuredHeight()/2,4,mMinutePaint);
         canvas.rotate(-(minute + 15) * 30,getMeasuredWidth()/2, getMeasuredHeight()/2);
 
         canvas.rotate((second + 15) * 6,getMeasuredWidth()/2, getMeasuredHeight()/2);
         canvas.drawLine(getMeasuredWidth()/2, getMeasuredHeight()/2,getMeasuredWidth()/2 - 200, getMeasuredHeight()/2,mSecondPaint);
+        canvas.drawCircle(getMeasuredWidth()/2 - 200, getMeasuredHeight()/2,4,mSecondPaint);
         canvas.rotate(-(second + 15) * 30,getMeasuredWidth()/2, getMeasuredHeight()/2);
         //画表心2
         mClockPaint.setStyle(Paint.Style.FILL);
