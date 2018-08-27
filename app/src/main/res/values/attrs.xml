@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="ClockView">
+
+        <!--<attr name="circleBgStrokeWidth" format="dimension" />-->
+        <!--<attr name="progressStrokeWidth" format="dimension" />-->
+
+        <attr name="clockColor" format="color" />
+        <attr name="hourColor" format="color" />
+        <attr name="minuteColor" format="color" />
+        <attr name="sencondColor" format="color" />
+        <attr name="bgColor" format="color" />
+
+        <!--<attr name="circleAnimationDuration" format="integer" />-->
+<!---->
+        <!--<attr name="isDrawCenterProgressText" format="boolean" />-->
+<!---->
+        <!--<attr name="centerProgressTextColor" format="color"/>-->
+        <!--<attr name="centerProgressTextSize" format="dimension"/>-->
+    </declare-styleable>
+</resources>
