@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    
+    <declare-styleable name="WaterView">
+        <attr name="textColor" format="color"/>
+        <attr name="aboveColor" format="color"/>
+        <attr name="behindColor" format="color"/>
+        <attr name="backColor" format="color"/>
+        <attr name="circleColor" format="color" />
+        <attr name="radius" format="dimension" />
+    </declare-styleable>
 
     <declare-styleable name="ClockView">
-
-        <!--<attr name="circleBgStrokeWidth" format="dimension" />-->
-        <!--<attr name="progressStrokeWidth" format="dimension" />-->
-
         <attr name="clockColor" format="color" />
         <attr name="hourColor" format="color" />
         <attr name="minuteColor" format="color" />
         <attr name="sencondColor" format="color" />
         <attr name="bgColor" format="color" />
-
         <!--<attr name="circleAnimationDuration" format="integer" />-->
 <!---->
         <!--<attr name="isDrawCenterProgressText" format="boolean" />-->

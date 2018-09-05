@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.diy.views.diyviews.view.WaterView
+        android:id="@+id/water"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        app:behindColor="#7033cc66"
+        app:aboveColor="#9033cc66"
+        app:backColor="#ffffff"
+        app:circleColor="#aaaaaa"
+        app:textColor="#ffffff"
+        app:radius="100dp"
+        android:layout_gravity="top|center_horizontal" />
+</RelativeLayout>

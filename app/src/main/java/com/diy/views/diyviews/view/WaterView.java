@@ -1,10 +1,11 @@
 package com.diy.views.diyviews.view;
-
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
@@ -12,15 +13,17 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
+import com.diy.views.diyviews.R;
+
 import java.math.BigDecimal;
+import java.util.Random;
 
 import static java.lang.Math.PI;
-
 /**
  * Created by xuzhendong on 2018/8/23.
  */
-
 public class WaterView extends View {
+    private Context mContext;
     private Paint backPaint;//背景色，圆外部分
     private Paint circleBackPaint;//圆上部画笔
     private Paint aboveWavePaint;//上方波浪画笔
@@ -31,59 +34,86 @@ public class WaterView extends View {
     private int backColor = Color.parseColor("#003333");//圆外部颜色
     private int circleBackColor = Color.parseColor("#ffffff");//圆上部颜色
     private int aboveColor = Color.parseColor("#90990000");//上方波浪颜色
-    private int behindColor = Color.parseColor("#60990000");//下方波浪颜色
+    private int behindColor = Color.parseColor("#f970f0");//下方波浪颜色
+    private int textColor = Color.parseColor("#003333");//下方波浪颜色
+
     private int radius = 270;//圆的半径
-    private static int START_ANGEL = 0;//波浪三角函数角度初始值
-    private int waveV = 15;//波浪移动速度
-    private int waveH = 18;//波浪震幅
+    public int startAngel = 0;//波浪三角函数角度初始值
+    private int waveV = 10;//波浪移动速度
+    private int waveH = 30;//波浪震幅
+    private double waveW = 0.5; //波浪宽度系数
     private float dValue = 2; //两个波浪的相值差
-    private float finishCode = 20; //完成度百分比
+    private float finishCode = 0; //完成度百分比
+    private boolean handleMsg;
     //通过handler定时更新重绘
     private Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            invalidate();
-            START_ANGEL += waveV;
-            dValue = dValue + 0.02f;
-            if(finishCode + 0.2 < 100) {
-                finishCode += 0.2;
-            }else {
-                finishCode = 100;
+            if(handleMsg) {
+                invalidate();
+                startAngel += waveV;
+                dValue = dValue - 0.02f;
+                if (finishCode + 0.2 < 50) {
+                    finishCode += 0.2;
+                } else {
+                    finishCode = 50;
+                }
+                float x = (50 + new Random().nextInt(50))/50;
+                waveH = (int) (waveH * x);
+                handler.sendMessageDelayed(new Message(), 50);
             }
-//            if(dValue % (PI * 2) < 0.1){
-//                dValue += 0.2;
-//            }
-            handler.sendMessageDelayed(new Message(),50);
         }
     };
 
     public WaterView(Context context) {
         super(context);
-        init();
+        this.mContext = context;
+        init(null);
     }
 
     public WaterView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        init();
+        this.mContext = context;
+        init(attrs);
     }
 
     public WaterView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
+        this.mContext = context;
+        init(attrs);
     }
 
-    public void init(){
+    private void getAttr(AttributeSet attrs) {
+        if(attrs != null) {
+            Log.v("verf","color " + backColor + " " + aboveColor + " " + behindColor + " " + textColor + " " + textColor + " " + circleBackColor);
+            TypedArray typedArray = mContext.obtainStyledAttributes(attrs, R.styleable.WaterView);
+//            progressStrokeWidth = typedArray.getDimensionPixelOffset(R.styleable.CircleProgressBarView_progressStrokeWidth, defaultStrokeWidth);
+            backColor = typedArray.getColor(R.styleable.WaterView_backColor, backColor);
+            aboveColor = typedArray.getColor(R.styleable.WaterView_aboveColor, aboveColor);
+            behindColor = typedArray.getColor(R.styleable.WaterView_behindColor, behindColor);
+            textColor = typedArray.getColor(R.styleable.WaterView_textColor, textColor);
+            circleBackColor = typedArray.getColor(R.styleable.WaterView_circleColor, circleBackColor);
+            radius = (int) typedArray.getDimension(R.styleable.WaterView_radius, radius);
+            Log.v("verf","radius "  + radius);
+//            isDrawCenterProgressText = typedArray.getBoolean(R.styleable.CircleProgressBarView_isDrawCenterProgressText, false);
+            typedArray.recycle();
+        }
+    }
+
+    public void init(AttributeSet attrs){
+        getAttr(attrs);
         abovePath = new Path();
         behindPath = new Path();
+        handleMsg = true;
         initPaint();
     }
 
     public void initPaint(){
         textPaint = new Paint();
-        textPaint.setColor(backColor);
-        textPaint.setStrokeWidth(2f);
-        textPaint.setTextSize(35);
+        textPaint.setColor(textColor);
+        textPaint.setStrokeWidth(0.1f);
+        textPaint.setTextSize(65);
         textPaint.setStyle(Paint.Style.FILL_AND_STROKE);
 
 
@@ -113,6 +143,9 @@ public class WaterView extends View {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int width = MeasureSpec.getSize(widthMeasureSpec);
         int height = MeasureSpec.getSize(heightMeasureSpec);
+        if(radius > Math.min(width,height)){
+            radius = Math.min(width,height);
+        }
         setMeasuredDimension(width,height);
     }
 
@@ -127,22 +160,26 @@ public class WaterView extends View {
         //根据完成度计算y的差值
         float deep = (100 - finishCode) * (2 * radius / 100) + getMeasuredHeight()/2 - radius;
         int startX = getMeasuredWidth()/2 - radius - 20 ;
-        abovePath.lineTo(getMeasuredWidth()/2 - radius - 100, (float) (waveH * Math.sin((startX + START_ANGEL) * PI/180)) + deep);
-        behindPath.lineTo(getMeasuredWidth()/2 - radius - 100, (float) (waveH * Math.sin((startX + START_ANGEL) * PI/180 + dValue)) + deep);
+        abovePath.lineTo(getMeasuredWidth()/2 - radius - 100, (float) (waveH * Math.sin((startX + startAngel) * PI/180)) + deep);
+        behindPath.lineTo(getMeasuredWidth()/2 - radius - 100, (float) (waveH * Math.sin((startX + startAngel) * PI/180 - dValue)) + deep);
         //画外部圆
         canvas.drawCircle(getMeasuredWidth()/2, getMeasuredHeight()/2, radius, circleBackPaint);
+        //遍历，获取两个波浪的path
         for(int i = startX; i < getMeasuredWidth() + radius + 20; i = i + 10){
-            double y1 = waveH * Math.sin((i + START_ANGEL) * PI/180) + deep;
-            double y2 = waveH * Math.sin((i + START_ANGEL)* PI/180 + dValue) + deep;
+            double y1 = waveH * Math.sin((i * waveW + startAngel) * PI/180) + deep;
+            double y2 = waveH * Math.sin((i * waveW + startAngel)* PI/180 + dValue) + deep;
             abovePath.lineTo(i, (float) y1);
             behindPath.lineTo(i, (float) y2);
             if((i - getMeasuredWidth()/2 < 11 && (i - getMeasuredWidth()/2 > -11))){
                 BigDecimal b  =   new  BigDecimal(finishCode);
                 float f1   =  b.setScale(2,  BigDecimal.ROUND_HALF_UP).floatValue();
-                if(f1 == 100){
+                if(f1 > 96){
+                    f1 = 100f;
                     y1 += 50;
+                }else {
+                    y1 += 10;
                 }
-                canvas.drawText(f1 + "%", getMeasuredWidth() / 2 - 30, (float)y1,textPaint);
+                canvas.drawText(f1 + "%", getMeasuredWidth() / 2 - 50, (float)y1,textPaint);
             }
 
         }
@@ -162,5 +199,16 @@ public class WaterView extends View {
         canvas.drawPath(path,backPaint);
     }
 
+    @Override
+    public void destroyDrawingCache() {
+        super.destroyDrawingCache();
+    }
 
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        Log.v("verf","onDetachedFromWindow");
+        startAngel = 0;
+        handleMsg = false;
+    }
 }

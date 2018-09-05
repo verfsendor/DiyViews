@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import com.diy.views.diyviews.R;
 import java.util.Calendar;
@@ -39,16 +40,19 @@ public class ClockView extends View {
     private int hour;//小时
     private int minute;//分钟
     private int second;//秒
+    private boolean handleMsg;
     private Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            Calendar cal = Calendar.getInstance();
-            hour = cal.get(Calendar.HOUR_OF_DAY);
-            minute = cal.get(Calendar.MINUTE);
-            second = cal.get(Calendar.SECOND);
-            invalidate();
-            handler.sendMessageDelayed(new Message(),1000);
+            if(handleMsg) {
+                Calendar cal = Calendar.getInstance();
+                hour = cal.get(Calendar.HOUR_OF_DAY);
+                minute = cal.get(Calendar.MINUTE);
+                second = cal.get(Calendar.SECOND);
+                invalidate();
+                handler.sendMessageDelayed(new Message(), 1000);
+            }
         }
     };
 
@@ -88,6 +92,7 @@ public class ClockView extends View {
     private void init(AttributeSet attrs) {
         getAttr(attrs);
         initPaint();
+        handleMsg = true;
         handler.sendMessage(new Message());
     }
 
@@ -196,5 +201,11 @@ public class ClockView extends View {
         mClockPaint.setStyle(Paint.Style.FILL);
         canvas.drawCircle(getMeasuredWidth()/2, getMeasuredHeight()/2,15f, mClockPaint);
         mClockPaint.setStyle(Paint.Style.STROKE);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        handleMsg = false;
     }
 }
